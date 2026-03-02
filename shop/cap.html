@@ -34,8 +34,10 @@
 
       <form id="product-form" class="product-options">
         <div class="option-group">
-          <label>Color</label>
-          <div class="option-buttons" id="color-options"></div>
+          <label for="color-select">Color</label>
+          <select class="option-select" id="color-select">
+            <option value="">Select a color</option>
+          </select>
         </div>
         <div id="stock-status" class="stock-status"></div>
         <button type="submit" class="cta cta-warm product-buy" id="buy-btn" disabled>
@@ -68,26 +70,25 @@
     ];
 
     let selectedColor = null;
-    const colorContainer = document.getElementById('color-options');
+    const colorSelect = document.getElementById('color-select');
     const buyBtn = document.getElementById('buy-btn');
     const stockStatus = document.getElementById('stock-status');
     const productForm = document.getElementById('product-form');
 
-    function render() {
-      colorContainer.innerHTML = '';
-      VARIANTS.forEach(v => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'opt-btn' + (selectedColor === v.color ? ' active' : '') + (v.qty === 0 ? ' sold-out' : '');
-        btn.textContent = v.color + (v.qty === 0 ? ' (Sold Out)' : '');
-        if (v.qty > 0) {
-          btn.addEventListener('click', () => { selectedColor = v.color; render(); });
-        } else {
-          btn.disabled = true;
-        }
-        colorContainer.appendChild(btn);
-      });
+    VARIANTS.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.color;
+      opt.textContent = v.qty === 0 ? `${v.color} (Sold Out)` : v.color;
+      if (v.qty === 0) opt.disabled = true;
+      colorSelect.appendChild(opt);
+    });
 
+    colorSelect.addEventListener('change', () => {
+      selectedColor = colorSelect.value || null;
+      updateStatus();
+    });
+
+    function updateStatus() {
       const variant = selectedColor ? VARIANTS.find(v => v.color === selectedColor) : null;
       if (variant) {
         if (variant.qty > 0) {
@@ -118,11 +119,9 @@
         if (data.url) window.location.href = data.url;
         else if (data.error === 'out_of_stock') {
           stockStatus.textContent = data.message; stockStatus.className = 'stock-status stock-out'; buyBtn.textContent = 'Sold Out';
-        } else { alert('Something went wrong.'); render(); }
-      } catch { alert('Connection error.'); render(); }
+        } else { alert('Something went wrong.'); updateStatus(); }
+      } catch { alert('Connection error.'); updateStatus(); }
     });
-
-    render();
     const toggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');
     toggle.addEventListener('click', () => { toggle.classList.toggle('open'); navLinks.classList.toggle('open'); });

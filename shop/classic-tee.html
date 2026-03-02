@@ -37,16 +37,22 @@
 
       <form id="product-form" class="product-options">
         <div class="option-group">
-          <label>Shirt Color</label>
-          <div class="option-buttons" id="color-options"></div>
+          <label for="color-select">Shirt Color</label>
+          <select class="option-select" id="color-select">
+            <option value="">Select a color</option>
+          </select>
         </div>
         <div class="option-group">
-          <label>Size</label>
-          <div class="option-buttons" id="size-options"></div>
+          <label for="size-select">Size</label>
+          <select class="option-select" id="size-select" disabled>
+            <option value="">Select a size</option>
+          </select>
         </div>
         <div class="option-group">
-          <label>Print Color</label>
-          <div class="option-buttons" id="print-options"></div>
+          <label for="print-select">Print Color</label>
+          <select class="option-select" id="print-select" disabled>
+            <option value="">Select print color</option>
+          </select>
         </div>
         <div id="stock-status" class="stock-status"></div>
         <button type="submit" class="cta cta-warm product-buy" id="buy-btn" disabled>
@@ -103,63 +109,89 @@
 
     const PRICE_DISPLAY = '$45';
 
-    let selectedColor = null;
-    let selectedSize = null;
-    let selectedPrint = null;
-
-    const colorContainer = document.getElementById('color-options');
-    const sizeContainer = document.getElementById('size-options');
-    const printContainer = document.getElementById('print-options');
+    const colorSelect = document.getElementById('color-select');
+    const sizeSelect = document.getElementById('size-select');
+    const printSelect = document.getElementById('print-select');
     const buyBtn = document.getElementById('buy-btn');
     const stockStatus = document.getElementById('stock-status');
     const productForm = document.getElementById('product-form');
     const PRINT_LABELS = { d: 'Dark', w: 'White' };
     const allColors = [...new Set(VARIANTS.map(v => v.color))];
 
-    function render() {
-      colorContainer.innerHTML = '';
-      allColors.forEach(color => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'opt-btn' + (selectedColor === color ? ' active' : '');
-        btn.textContent = color;
-        btn.addEventListener('click', () => { selectedColor = color; selectedSize = null; selectedPrint = null; render(); });
-        colorContainer.appendChild(btn);
+    // Populate color dropdown
+    allColors.forEach(color => {
+      const opt = document.createElement('option');
+      opt.value = color;
+      opt.textContent = color;
+      colorSelect.appendChild(opt);
+    });
+
+    colorSelect.addEventListener('change', () => {
+      sizeSelect.value = '';
+      printSelect.value = '';
+      printSelect.disabled = true;
+      updateSizes();
+      updateStatus();
+    });
+
+    sizeSelect.addEventListener('change', () => {
+      printSelect.value = '';
+      updatePrints();
+      updateStatus();
+    });
+
+    printSelect.addEventListener('change', () => {
+      updateStatus();
+    });
+
+    function updateSizes() {
+      const color = colorSelect.value;
+      sizeSelect.innerHTML = '<option value="">Select a size</option>';
+      if (!color) { sizeSelect.disabled = true; return; }
+      const sizes = [...new Set(VARIANTS.filter(v => v.color === color).map(v => v.size))];
+      const order = ['S', 'M', 'L', 'XL', '2XL'];
+      sizes.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+      sizes.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s; opt.textContent = s;
+        sizeSelect.appendChild(opt);
       });
+      sizeSelect.disabled = false;
+    }
 
-      sizeContainer.innerHTML = '';
-      if (selectedColor) {
-        const sizes = [...new Set(VARIANTS.filter(v => v.color === selectedColor).map(v => v.size))];
-        const order = ['S', 'M', 'L', 'XL', '2XL'];
-        sizes.sort((a, b) => order.indexOf(a) - order.indexOf(b));
-        sizes.forEach(size => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'opt-btn' + (selectedSize === size ? ' active' : '');
-          btn.textContent = size;
-          btn.addEventListener('click', () => { selectedSize = size; selectedPrint = null; render(); });
-          sizeContainer.appendChild(btn);
-        });
-      }
-
-      printContainer.innerHTML = '';
-      if (selectedColor && selectedSize) {
-        const prints = [...new Set(VARIANTS.filter(v => v.color === selectedColor && v.size === selectedSize).map(v => v.print))];
-        if (prints.length === 1) selectedPrint = prints[0];
+    function updatePrints() {
+      const color = colorSelect.value;
+      const size = sizeSelect.value;
+      printSelect.innerHTML = '<option value="">Select print color</option>';
+      if (!color || !size) { printSelect.disabled = true; return; }
+      const prints = [...new Set(VARIANTS.filter(v => v.color === color && v.size === size).map(v => v.print))];
+      if (prints.length === 1) {
+        const opt = document.createElement('option');
+        opt.value = prints[0]; opt.textContent = PRINT_LABELS[prints[0]] || prints[0];
+        printSelect.appendChild(opt);
+        printSelect.value = prints[0];
+        printSelect.disabled = false;
+      } else {
         prints.forEach(p => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'opt-btn' + (selectedPrint === p ? ' active' : '');
-          btn.textContent = PRINT_LABELS[p] || p;
-          btn.addEventListener('click', () => { selectedPrint = p; render(); });
-          printContainer.appendChild(btn);
+          const opt = document.createElement('option');
+          opt.value = p; opt.textContent = PRINT_LABELS[p] || p;
+          printSelect.appendChild(opt);
         });
+        printSelect.disabled = false;
       }
+      updateStatus();
+    }
 
-      const variant = selectedColor && selectedSize && selectedPrint
-        ? VARIANTS.find(v => v.color === selectedColor && v.size === selectedSize && v.print === selectedPrint)
-        : null;
+    function getSelectedVariant() {
+      const color = colorSelect.value;
+      const size = sizeSelect.value;
+      const print = printSelect.value;
+      if (!color || !size || !print) return null;
+      return VARIANTS.find(v => v.color === color && v.size === size && v.print === print);
+    }
 
+    function updateStatus() {
+      const variant = getSelectedVariant();
       if (variant) {
         if (variant.qty > 0) {
           buyBtn.disabled = false;
@@ -178,7 +210,7 @@
 
     productForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const variant = VARIANTS.find(v => v.color === selectedColor && v.size === selectedSize && v.print === selectedPrint);
+      const variant = getSelectedVariant();
       if (!variant) return;
       buyBtn.disabled = true; buyBtn.textContent = 'Processing...';
       try {
@@ -190,11 +222,9 @@
         if (data.url) window.location.href = data.url;
         else if (data.error === 'out_of_stock') {
           stockStatus.textContent = data.message; stockStatus.className = 'stock-status stock-out'; buyBtn.textContent = 'Sold Out';
-        } else { alert('Something went wrong.'); render(); }
-      } catch { alert('Connection error.'); render(); }
+        } else { alert('Something went wrong.'); updateStatus(); }
+      } catch { alert('Connection error.'); updateStatus(); }
     });
-
-    render();
 
     const toggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');

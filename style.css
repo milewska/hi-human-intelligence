@@ -652,59 +652,67 @@ p {
 /* --- Product Detail Page --- */
 
 .product-detail {
-  display: grid;
-  grid-template-columns: 55% 45%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 120px 3rem 5rem;
   min-height: 100vh;
-  padding-top: 80px;
 }
 
 .product-detail-image {
-  position: sticky;
-  top: 80px;
-  height: calc(100vh - 80px);
+  flex: 0 0 480px;
+  max-width: 480px;
+  border-radius: 4px;
   overflow: hidden;
+  position: sticky;
+  top: 100px;
 }
 
 .product-detail-image img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  display: block;
+  border-radius: 4px;
 }
 
 .product-detail-info {
-  padding: 5rem 4rem 4rem;
+  flex: 1;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  max-width: 560px;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
 }
 
 .product-detail-info h1 {
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 700;
+  margin-bottom: 0;
 }
 
 .product-price {
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: var(--warm);
 }
 
 .product-desc {
-  color: rgba(245, 242, 238, 0.6);
-  font-size: 0.95rem;
+  color: rgba(245, 242, 238, 0.55);
+  font-size: 0.9rem;
   line-height: 1.7;
-  margin-bottom: 0.5rem;
-  max-width: 420px;
+  margin-bottom: 0.25rem;
 }
 
 .product-options {
   display: flex;
   flex-direction: column;
-  gap: 1.8rem;
-  margin-top: 0.5rem;
+  gap: 1.4rem;
+  margin-top: 1rem;
   padding-top: 1.5rem;
   border-top: 1px solid rgba(245, 242, 238, 0.08);
 }
@@ -712,7 +720,7 @@ p {
 .option-group {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 0.5rem;
 }
 
 .option-group label {
@@ -723,6 +731,50 @@ p {
   font-weight: 600;
 }
 
+/* ── Styled Select Dropdowns ── */
+.option-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  padding: 0.9rem 2.8rem 0.9rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  color: var(--white);
+  background: rgba(245, 242, 238, 0.04);
+  border: 1px solid rgba(245, 242, 238, 0.15);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all var(--transition);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+}
+
+.option-select:hover {
+  border-color: rgba(245, 242, 238, 0.35);
+}
+
+.option-select:focus {
+  outline: none;
+  border-color: var(--warm);
+  background-color: rgba(245, 242, 238, 0.06);
+}
+
+.option-select option {
+  background: #1a1a1a;
+  color: var(--white);
+  padding: 0.5rem;
+}
+
+.option-select:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Legacy button styles (kept for reference) */
 .option-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -790,7 +842,7 @@ p {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   font-weight: 600;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .product-buy:disabled {
@@ -805,7 +857,7 @@ p {
 }
 
 .back-link {
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.14em;
@@ -817,26 +869,22 @@ p {
   color: var(--warm);
 }
 
-/* Desktop large screens — center the info panel */
-@media (min-width: 1200px) {
-  .product-detail-info {
-    padding: 6rem 5rem 4rem;
-  }
-}
-
 @media (max-width: 768px) {
   .product-detail {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    padding: 100px 1.5rem 3rem;
+    gap: 2rem;
   }
 
   .product-detail-image {
+    flex: none;
+    max-width: 100%;
     position: relative;
     top: 0;
-    height: 50vh;
   }
 
   .product-detail-info {
-    padding: 2rem 1.5rem;
+    max-width: 100%;
   }
 }
 
