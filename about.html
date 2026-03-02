@@ -9,21 +9,6 @@
 </head>
 <body>
 
-  <!-- Nav -->
-  <nav class="nav">
-    <a href="index.html" class="nav-logo">
-      <img src="images/logo-nav.png" alt="HI — Human Intelligence">
-    </a>
-    <button class="menu-toggle" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="about.html" class="active">About</a></li>
-      <li><a href="shop.html">Shop</a></li>
-    </ul>
-  </nav>
-
   <!-- About Hero -->
   <section class="about-hero">
     <div class="hero-bg">
@@ -99,40 +84,8 @@
     <a href="shop.html" class="cta cta-warm">Shop HI</a>
   </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <a href="index.html" class="footer-logo">
-      <img src="images/logo-1.png" alt="HI">
-    </a>
-    <p class="tagline">A reminder to trust the innate intelligence of the human body.</p>
-    <div class="footer-socials">
-      <a href="#">Instagram</a>
-      <a href="#">TikTok</a>
-    </div>
-    <p class="footer-copy">&copy; 2026 HI — Human Intelligence. All rights reserved.</p>
-  </footer>
-
-  <script>
-    const toggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
-    toggle.addEventListener('click', () => {
-      toggle.classList.toggle('open');
-      navLinks.classList.toggle('open');
-    });
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        toggle.classList.remove('open');
-        navLinks.classList.remove('open');
-      });
-    });
-    const faders = document.querySelectorAll('.fade-in');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.1 });
-    faders.forEach(el => observer.observe(el));
-  </script>
+  <script src="nav.js" defer></script>
+  <script src="footer.js" defer></script>
 
 </body>
 </html>

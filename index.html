@@ -9,20 +9,6 @@
 </head>
 <body>
 
-  <nav class="nav">
-    <a href="index.html" class="nav-logo">
-      <img src="images/logo-nav.png" alt="HI — Human Intelligence">
-    </a>
-    <button class="menu-toggle" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-    <ul class="nav-links">
-      <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="shop.html">Shop</a></li>
-    </ul>
-  </nav>
-
   <section class="hero">
     <div class="hero-bg">
       <img src="images/photo-10.jpg" alt="HI lifestyle">
@@ -125,40 +111,8 @@
     <a href="shop.html" class="cta">Shop Now</a>
   </section>
 
-  <footer class="footer">
-    <a href="index.html" class="footer-logo">
-      <img src="images/logo-1.png" alt="HI">
-    </a>
-    <p class="tagline">A reminder to trust the innate intelligence of the human body.</p>
-    <div class="footer-socials">
-      <a href="#">Instagram</a>
-      <a href="#">TikTok</a>
-    </div>
-    <p class="footer-copy">&copy; 2026 HI — Human Intelligence. All rights reserved.</p>
-  </footer>
-
-  <script>
-    var toggle = document.querySelector('.menu-toggle');
-    var navLinks = document.querySelector('.nav-links');
-    toggle.addEventListener('click', function() {
-      toggle.classList.toggle('open');
-      navLinks.classList.toggle('open');
-    });
-    var links = navLinks.querySelectorAll('a');
-    for (var i = 0; i < links.length; i++) {
-      links[i].addEventListener('click', function() {
-        toggle.classList.remove('open');
-        navLinks.classList.remove('open');
-      });
-    }
-    var faders = document.querySelectorAll('.fade-in');
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.1 });
-    faders.forEach(function(el) { observer.observe(el); });
-  </script>
+  <script src="nav.js" defer></script>
+  <script src="footer.js" defer></script>
 
 </body>
 </html>
