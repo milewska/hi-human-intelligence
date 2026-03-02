@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — HI Human Intelligence</title>
+  <meta name="description" content="The story behind HI — Human Intelligence. A clothing brand born from movement, embodiment, and the belief that your body already knows.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">
+      <img src="images/logo-1.png" alt="HI — Human Intelligence">
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html" class="active">About</a></li>
+      <li><a href="shop.html">Shop</a></li>
+    </ul>
+  </nav>
+
+  <!-- About Hero -->
+  <section class="about-hero">
+    <div class="hero-bg">
+      <img src="images/photo-17.jpg" alt="HI — movement">
+    </div>
+    <div class="about-hero-content">
+      <h1>About HI</h1>
+      <p class="tagline">We didn't start a brand. We made a reminder.</p>
+    </div>
+  </section>
+
+  <!-- The Why -->
+  <section class="about-section fade-in">
+    <h2>The Why</h2>
+    <p class="highlight">
+      In a world racing to automate everything, we wanted to make one thing clear: the most sophisticated intelligence on the planet already lives inside you.
+    </p>
+    <p>
+      HI — Human Intelligence — was born from a simple observation: we've been so busy building artificial intelligence that we've forgotten the original kind. The kind that beats your heart a hundred thousand times a day without you thinking about it. The kind that heals a wound, catches a stumble, and knows when something feels right before your mind catches up.
+    </p>
+    <p>
+      This isn't anti-technology. We like our phones. We like our tools. But we also know that no algorithm will ever replicate the feeling of bare feet on warm ground, the intelligence of a body moving through space, or the quiet knowing that comes when you stop scrolling and start breathing.
+    </p>
+  </section>
+
+  <!-- Full-bleed break -->
+  <div class="full-bleed fade-in">
+    <img src="images/photo-20.jpg" alt="HI in the wild">
+  </div>
+
+  <!-- The Brand -->
+  <section class="about-section fade-in">
+    <h2>The Brand</h2>
+    <p>
+      HI lives at the intersection of movement, embodiment, and reclaiming the wisdom the body already has. Every piece we make is designed to be worn by people who move — who dance, stretch, walk, breathe, play, rest, and exist fully in their skin.
+    </p>
+    <p>
+      The clothes are simple. The message is the point. When you pull on an HI shirt, you're putting on a reminder: trust the intelligence you already carry.
+    </p>
+    <p>
+      We started with shirts and hats. We'll keep going. But the mission stays the same: make the invisible visible. Remind people that they are, already, enough.
+    </p>
+  </section>
+
+  <div class="divider" style="margin: 2rem auto;"></div>
+
+  <!-- Founders -->
+  <section class="about-section fade-in" style="max-width: 1000px;">
+    <h2 style="text-align: center; margin-bottom: 3rem;">The Founders</h2>
+    <div class="about-founders" style="padding: 0;">
+      <div class="founder-card">
+        <img src="images/photo-05.jpg" alt="Alex Milewski">
+        <h3>Alex Milewski</h3>
+        <p>Mover. Builder. Believes the body is the most honest technology we'll ever have.</p>
+      </div>
+      <div class="founder-card">
+        <img src="images/photo-04.jpg" alt="Celia Grannum-Perarnaud">
+        <h3>Celia Grannum-Perarnaud</h3>
+        <p>
+          Embodiment practitioner and founder of 
+          <a href="https://www.theconsciousnest.com/celia/" style="color: var(--warm); text-decoration: underline;">The Conscious Nest</a>. 
+          Guides people back into their bodies for a living.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Full-bleed break -->
+  <div class="full-bleed fade-in">
+    <img src="images/photo-22.jpg" alt="The HI movement">
+  </div>
+
+  <!-- CTA -->
+  <section class="brand-intro fade-in">
+    <h2>Wear the Reminder</h2>
+    <p>Your body already knows. Now let the world see it.</p>
+    <a href="shop.html" class="cta cta-warm">Shop HI</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <a href="index.html" class="footer-logo">
+      <img src="images/logo-1.png" alt="HI">
+    </a>
+    <p class="tagline">A reminder to trust the innate intelligence of the human body.</p>
+    <div class="footer-socials">
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 HI — Human Intelligence. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const toggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    toggle.addEventListener('click', () => {
+      toggle.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        toggle.classList.remove('open');
+        navLinks.classList.remove('open');
+      });
+    });
+    const faders = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    faders.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
