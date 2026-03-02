@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank You — HI Human Intelligence</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">
+      <img src="Logo/2.png" alt="HI — Human Intelligence">
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="shop.html">Shop</a></li>
+    </ul>
+  </nav>
+
+  <section class="success-page">
+    <div class="success-content">
+      <h1>Thank You</h1>
+      <div class="divider"></div>
+      <p>Your order has been placed. You'll receive a confirmation email shortly.</p>
+      <p class="tagline">Trust the innate intelligence of the human body.</p>
+      <a href="shop.html" class="cta cta-warm">Continue Shopping</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <a href="index.html" class="footer-logo">
+      <img src="images/logo-1.png" alt="HI">
+    </a>
+    <p class="tagline">A reminder to trust the innate intelligence of the human body.</p>
+    <div class="footer-socials">
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 HI — Human Intelligence. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const toggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    toggle.addEventListener('click', () => { toggle.classList.toggle('open'); navLinks.classList.toggle('open'); });
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => { toggle.classList.remove('open'); navLinks.classList.remove('open'); });
+    });
+  </script>
+
+</body>
+</html>

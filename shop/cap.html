@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HI Cap — HI Human Intelligence</title>
+  <meta name="description" content="Classic cap. A reminder to trust the innate intelligence of the human body.">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="../index.html" class="nav-logo">
+      <img src="../Logo/2.png" alt="HI — Human Intelligence">
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../shop.html" class="active">Shop</a></li>
+    </ul>
+  </nav>
+
+  <section class="product-detail">
+    <div class="product-detail-image">
+      <img src="../images/photo-03.jpg" alt="HI Cap" id="product-image">
+    </div>
+    <div class="product-detail-info">
+      <h1>HI Cap</h1>
+      <p class="product-price">$35</p>
+      <p class="product-desc">Classic cap. A reminder to trust the innate intelligence of the human body.</p>
+
+      <form id="product-form" class="product-options">
+        <div class="option-group">
+          <label>Color</label>
+          <div class="option-buttons" id="color-options"></div>
+        </div>
+        <div id="stock-status" class="stock-status"></div>
+        <button type="submit" class="cta cta-warm product-buy" id="buy-btn" disabled>
+          Select a Color
+        </button>
+      </form>
+
+      <a href="../shop.html" class="back-link">← Back to Shop</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <a href="../index.html" class="footer-logo">
+      <img src="../images/logo-1.png" alt="HI">
+    </a>
+    <p class="tagline">A reminder to trust the innate intelligence of the human body.</p>
+    <div class="footer-socials">
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 HI — Human Intelligence. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const VARIANTS = [
+      { color: "Black",     qty: 3, productId: "prod_U4dHkHV7cJS24a", priceId: "price_1T6U0dE3DWgyVvjlbXhuf6HG" },
+      { color: "Charcoal",  qty: 3, productId: "prod_U4dHQfZf8lC4dv", priceId: "price_1T6U0fE3DWgyVvjlNxiz9D3d" },
+      { color: "Driftwood", qty: 0, productId: "prod_U4dHILhJpFyPMb", priceId: "price_1T6U0gE3DWgyVvjlLCWIfD4s" },
+      { color: "Stone",     qty: 4, productId: "prod_U4dHxXOmD3yDku", priceId: "price_1T6U0hE3DWgyVvjlPdVaFqbc" },
+    ];
+
+    let selectedColor = null;
+    const colorContainer = document.getElementById('color-options');
+    const buyBtn = document.getElementById('buy-btn');
+    const stockStatus = document.getElementById('stock-status');
+    const productForm = document.getElementById('product-form');
+
+    function render() {
+      colorContainer.innerHTML = '';
+      VARIANTS.forEach(v => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt-btn' + (selectedColor === v.color ? ' active' : '') + (v.qty === 0 ? ' sold-out' : '');
+        btn.textContent = v.color + (v.qty === 0 ? ' (Sold Out)' : '');
+        if (v.qty > 0) {
+          btn.addEventListener('click', () => { selectedColor = v.color; render(); });
+        } else {
+          btn.disabled = true;
+        }
+        colorContainer.appendChild(btn);
+      });
+
+      const variant = selectedColor ? VARIANTS.find(v => v.color === selectedColor) : null;
+      if (variant) {
+        if (variant.qty > 0) {
+          buyBtn.disabled = false; buyBtn.textContent = 'Buy Now — $35';
+          stockStatus.textContent = variant.qty <= 3 ? `Only ${variant.qty} left` : 'In Stock';
+          stockStatus.className = 'stock-status' + (variant.qty <= 3 ? ' stock-low' : ' stock-ok');
+        } else {
+          buyBtn.disabled = true; buyBtn.textContent = 'Sold Out';
+          stockStatus.textContent = 'Out of stock'; stockStatus.className = 'stock-status stock-out';
+        }
+      } else {
+        buyBtn.disabled = true; buyBtn.textContent = 'Select a Color';
+        stockStatus.textContent = ''; stockStatus.className = 'stock-status';
+      }
+    }
+
+    productForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const variant = VARIANTS.find(v => v.color === selectedColor);
+      if (!variant) return;
+      buyBtn.disabled = true; buyBtn.textContent = 'Processing...';
+      try {
+        const res = await fetch('/api/checkout', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ priceId: variant.priceId, productId: variant.productId, quantity: 1 })
+        });
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+        else if (data.error === 'out_of_stock') {
+          stockStatus.textContent = data.message; stockStatus.className = 'stock-status stock-out'; buyBtn.textContent = 'Sold Out';
+        } else { alert('Something went wrong.'); render(); }
+      } catch { alert('Connection error.'); render(); }
+    });
+
+    render();
+    const toggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    toggle.addEventListener('click', () => { toggle.classList.toggle('open'); navLinks.classList.toggle('open'); });
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => { toggle.classList.remove('open'); navLinks.classList.remove('open'); });
+    });
+  </script>
+</body>
+</html>

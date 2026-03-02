@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HI Classic Tee — HI Human Intelligence</title>
+  <meta name="description" content="Classic fit tee. A reminder to trust the innate intelligence of the human body.">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="../index.html" class="nav-logo">
+      <img src="../Logo/2.png" alt="HI — Human Intelligence">
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../shop.html" class="active">Shop</a></li>
+    </ul>
+  </nav>
+
+  <!-- Product Detail -->
+  <section class="product-detail">
+    <div class="product-detail-image">
+      <img src="../images/photo-12.jpg" alt="HI Classic Tee" id="product-image">
+    </div>
+
+    <div class="product-detail-info">
+      <h1>HI Classic Tee</h1>
+      <p class="product-price">$45</p>
+      <p class="product-desc">Classic fit tee. A reminder to trust the innate intelligence of the human body.</p>
+
+      <form id="product-form" class="product-options">
+        <div class="option-group">
+          <label>Shirt Color</label>
+          <div class="option-buttons" id="color-options"></div>
+        </div>
+        <div class="option-group">
+          <label>Size</label>
+          <div class="option-buttons" id="size-options"></div>
+        </div>
+        <div class="option-group">
+          <label>Print Color</label>
+          <div class="option-buttons" id="print-options"></div>
+        </div>
+        <div id="stock-status" class="stock-status"></div>
+        <button type="submit" class="cta cta-warm product-buy" id="buy-btn" disabled>
+          Select Options Above
+        </button>
+      </form>
+
+      <a href="../shop.html" class="back-link">← Back to Shop</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <a href="../index.html" class="footer-logo">
+      <img src="../images/logo-1.png" alt="HI">
+    </a>
+    <p class="tagline">A reminder to trust the innate intelligence of the human body.</p>
+    <div class="footer-socials">
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 HI — Human Intelligence. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const VARIANTS = [
+      // Washed Pine
+      { color: "Washed Pine", size: "M",   print: "d", qty: 2, productId: "prod_U4dGrecC1attgM", priceId: "price_1T6TziE3DWgyVvjlaCZoTZHi" },
+      { color: "Washed Pine", size: "L",   print: "w", qty: 1, productId: "prod_U4dGbCsYVg5pBC", priceId: "price_1T6TzjE3DWgyVvjlg9E5Bcsu" },
+      { color: "Washed Pine", size: "XL",  print: "d", qty: 1, productId: "prod_U4dGtDVZhfJ5aD", priceId: "price_1T6TzkE3DWgyVvjlAt0nhJqi" },
+      { color: "Washed Pine", size: "2XL", print: "w", qty: 1, productId: "prod_U4dG5EeXK2fQby", priceId: "price_1T6TzmE3DWgyVvjlHCsxFEPg" },
+      // Washed Red
+      { color: "Washed Red", size: "L",   print: "d", qty: 1, productId: "prod_U4dGqoyUiJyyTQ", priceId: "price_1T6TznE3DWgyVvjldtDps4rn" },
+      { color: "Washed Red", size: "L",   print: "w", qty: 1, productId: "prod_U4dGGBwydZpTxq", priceId: "price_1T6TzoE3DWgyVvjlNxPFoh4U" },
+      { color: "Washed Red", size: "XL",  print: "d", qty: 2, productId: "prod_U4dG9I1CS7aH7t", priceId: "price_1T6TzqE3DWgyVvjlcCVc1lgE" },
+      { color: "Washed Red", size: "XL",  print: "w", qty: 1, productId: "prod_U4dGdox5G1Su8o", priceId: "price_1T6TzsE3DWgyVvjlKe5BsuLb" },
+      { color: "Washed Red", size: "2XL", print: "d", qty: 1, productId: "prod_U4dGA3MkrOHfJH", priceId: "price_1T6TztE3DWgyVvjlnPTMBdwY" },
+      // Washed Cocoa
+      { color: "Washed Cocoa", size: "XL",  print: "w", qty: 3, productId: "prod_U4dGURjsgRSgrE", priceId: "price_1T6TzuE3DWgyVvjlJKJykHf5" },
+      { color: "Washed Cocoa", size: "2XL", print: "w", qty: 1, productId: "prod_U4dGFNuhwBjcSM", priceId: "price_1T6TzvE3DWgyVvjlgv3r0xl8" },
+      // Brick
+      { color: "Brick", size: "S", print: "w", qty: 4, productId: "prod_U4dGDSLZ4Ix9Xf", priceId: "price_1T6TzxE3DWgyVvjlDCQE4oFk" },
+      { color: "Brick", size: "M", print: "w", qty: 2, productId: "prod_U4dGQj3oOCnMVy", priceId: "price_1T6TzyE3DWgyVvjl4azbRORj" },
+      { color: "Brick", size: "L", print: "w", qty: 1, productId: "prod_U4dGKWPV3KvK8b", priceId: "price_1T6TzzE3DWgyVvjlR85W3YiX" },
+      // Washed Denim
+      { color: "Washed Denim", size: "S", print: "d", qty: 4, productId: "prod_U4dGrV6jquBk8E", priceId: "price_1T6U00E3DWgyVvjlTPIIq14U" },
+      { color: "Washed Denim", size: "M", print: "d", qty: 1, productId: "prod_U4dGW7sQAFdi2l", priceId: "price_1T6U02E3DWgyVvjlxhYTR7dn" },
+      { color: "Washed Denim", size: "L", print: "d", qty: 1, productId: "prod_U4dGwS0QNpeMXJ", priceId: "price_1T6U03E3DWgyVvjlLqwD7AMe" },
+      // Emerald
+      { color: "Emerald", size: "S", print: "d", qty: 4, productId: "prod_U4dGjsT0c3f5so", priceId: "price_1T6U04E3DWgyVvjl7W2b51M1" },
+      { color: "Emerald", size: "M", print: "d", qty: 1, productId: "prod_U4dGeaOSWu6okH", priceId: "price_1T6U06E3DWgyVvjl9ViT7rjb" },
+      { color: "Emerald", size: "L", print: "d", qty: 1, productId: "prod_U4dGTX7MM4b1gl", priceId: "price_1T6U07E3DWgyVvjliCCE8Djp" },
+    ];
+
+    const PRICE_DISPLAY = '$45';
+
+    let selectedColor = null;
+    let selectedSize = null;
+    let selectedPrint = null;
+
+    const colorContainer = document.getElementById('color-options');
+    const sizeContainer = document.getElementById('size-options');
+    const printContainer = document.getElementById('print-options');
+    const buyBtn = document.getElementById('buy-btn');
+    const stockStatus = document.getElementById('stock-status');
+    const productForm = document.getElementById('product-form');
+    const PRINT_LABELS = { d: 'Dark', w: 'White' };
+    const allColors = [...new Set(VARIANTS.map(v => v.color))];
+
+    function render() {
+      colorContainer.innerHTML = '';
+      allColors.forEach(color => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt-btn' + (selectedColor === color ? ' active' : '');
+        btn.textContent = color;
+        btn.addEventListener('click', () => { selectedColor = color; selectedSize = null; selectedPrint = null; render(); });
+        colorContainer.appendChild(btn);
+      });
+
+      sizeContainer.innerHTML = '';
+      if (selectedColor) {
+        const sizes = [...new Set(VARIANTS.filter(v => v.color === selectedColor).map(v => v.size))];
+        const order = ['S', 'M', 'L', 'XL', '2XL'];
+        sizes.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+        sizes.forEach(size => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'opt-btn' + (selectedSize === size ? ' active' : '');
+          btn.textContent = size;
+          btn.addEventListener('click', () => { selectedSize = size; selectedPrint = null; render(); });
+          sizeContainer.appendChild(btn);
+        });
+      }
+
+      printContainer.innerHTML = '';
+      if (selectedColor && selectedSize) {
+        const prints = [...new Set(VARIANTS.filter(v => v.color === selectedColor && v.size === selectedSize).map(v => v.print))];
+        if (prints.length === 1) selectedPrint = prints[0];
+        prints.forEach(p => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'opt-btn' + (selectedPrint === p ? ' active' : '');
+          btn.textContent = PRINT_LABELS[p] || p;
+          btn.addEventListener('click', () => { selectedPrint = p; render(); });
+          printContainer.appendChild(btn);
+        });
+      }
+
+      const variant = selectedColor && selectedSize && selectedPrint
+        ? VARIANTS.find(v => v.color === selectedColor && v.size === selectedSize && v.print === selectedPrint)
+        : null;
+
+      if (variant) {
+        if (variant.qty > 0) {
+          buyBtn.disabled = false;
+          buyBtn.textContent = `Buy Now — ${PRICE_DISPLAY}`;
+          stockStatus.textContent = variant.qty <= 3 ? `Only ${variant.qty} left` : 'In Stock';
+          stockStatus.className = 'stock-status' + (variant.qty <= 3 ? ' stock-low' : ' stock-ok');
+        } else {
+          buyBtn.disabled = true; buyBtn.textContent = 'Sold Out';
+          stockStatus.textContent = 'Out of stock'; stockStatus.className = 'stock-status stock-out';
+        }
+      } else {
+        buyBtn.disabled = true; buyBtn.textContent = 'Select Options Above';
+        stockStatus.textContent = ''; stockStatus.className = 'stock-status';
+      }
+    }
+
+    productForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const variant = VARIANTS.find(v => v.color === selectedColor && v.size === selectedSize && v.print === selectedPrint);
+      if (!variant) return;
+      buyBtn.disabled = true; buyBtn.textContent = 'Processing...';
+      try {
+        const res = await fetch('/api/checkout', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ priceId: variant.priceId, productId: variant.productId, quantity: 1 })
+        });
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+        else if (data.error === 'out_of_stock') {
+          stockStatus.textContent = data.message; stockStatus.className = 'stock-status stock-out'; buyBtn.textContent = 'Sold Out';
+        } else { alert('Something went wrong.'); render(); }
+      } catch { alert('Connection error.'); render(); }
+    });
+
+    render();
+
+    const toggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    toggle.addEventListener('click', () => { toggle.classList.toggle('open'); navLinks.classList.toggle('open'); });
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => { toggle.classList.remove('open'); navLinks.classList.remove('open'); });
+    });
+  </script>
+</body>
+</html>
