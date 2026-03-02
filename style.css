@@ -97,14 +97,12 @@ p {
 }
 
 .nav-logo img {
-  height: 60px;
-  width: 60px;
+  height: 50px;
+  width: auto;
   object-fit: contain;
-  border-radius: 8px;
-  background: transparent;
-  padding: 4px;
-  outline: 1.5px solid rgba(255, 255, 255, 0.4);
-  outline-offset: 3px;
+  border-radius: 3px;
+  background: #fff;
+  padding: 4px 6px;
 }
 
 .nav-links {
