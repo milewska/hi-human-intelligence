@@ -15,7 +15,6 @@
     <p class="tagline">A reminder to trust the innate intelligence of the human body.</p>
     <div class="footer-socials">
       <a href="#">Instagram</a>
-      <a href="#">TikTok</a>
     </div>
     <p class="footer-copy">&copy; 2026 HI — Human Intelligence. All rights reserved.</p>
   </footer>`;
