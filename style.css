@@ -97,8 +97,10 @@ p {
 }
 
 .nav-logo img {
-  height: 44px;
-  width: auto;
+  height: 36px;
+  width: 36px;
+  object-fit: contain;
+  border-radius: 4px;
 }
 
 .nav-links {
