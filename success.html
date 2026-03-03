@@ -22,9 +22,10 @@
   <script src="footer.js" defer></script>
   <script src="cart.js" defer></script>
   <script>
-    // Clear cart after successful checkout
+    // Clear cart after successful checkout (direct localStorage access
+    // to avoid timing issues with deferred cart.js)
     if (window.location.search.includes('session_id')) {
-      try { HI_CART.clear(); } catch(e) {}
+      localStorage.removeItem('hi_cart');
     }
   </script>
 
