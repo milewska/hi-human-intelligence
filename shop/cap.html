@@ -46,11 +46,21 @@
       { color: "Stone",     qty: 4, productId: "prod_U4dHxXOmD3yDku", priceId: "price_1T6U0hE3DWgyVvjlPdVaFqbc" },
     ];
 
+    // Image map: color → filename
+    const IMAGE_MAP = {
+      'Black':     '../images/shop/hatBlack.JPG',
+      'Charcoal':  '../images/shop/hatCharcoal.JPG',
+      'Driftwood': '../images/shop/hatDriftwood.JPG',
+      'Stone':     '../images/shop/hatStone.jpg',
+    };
+    const DEFAULT_IMAGE = '../images/photo-03.jpg';
+
     let selectedColor = null;
     const colorSelect = document.getElementById('color-select');
     const buyBtn = document.getElementById('buy-btn');
     const stockStatus = document.getElementById('stock-status');
     const productForm = document.getElementById('product-form');
+    const productImage = document.getElementById('product-image');
 
     VARIANTS.forEach(v => {
       const opt = document.createElement('option');
@@ -62,6 +72,7 @@
 
     colorSelect.addEventListener('change', () => {
       selectedColor = colorSelect.value || null;
+      productImage.src = IMAGE_MAP[selectedColor] || DEFAULT_IMAGE;
       updateStatus();
     });
 

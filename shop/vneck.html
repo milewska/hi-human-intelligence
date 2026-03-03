@@ -73,12 +73,25 @@
     ];
 
     const PRICE_DISPLAY = '$30';
+
+    // Image map: "Color|print" → filename
+    const IMAGE_MAP = {
+      'Asphalt|w':        '../images/shop/vAsphaltWhite.JPG',
+      'Natural|d':        '../images/shop/vNaturalDark.JPG',
+      'Natural|w':        '../images/shop/vNaturalWhite.JPG',
+      'Mauve|w':          '../images/shop/vMauveWhite.JPG',
+      'Military Green|d': '../images/shop/vMilitaryGreenDark.JPG',
+      'Military Green|w': '../images/shop/vMilitaryGreenWhite.JPG',
+    };
+    const DEFAULT_IMAGE = '../images/photo-16.jpg';
+
     const colorSelect = document.getElementById('color-select');
     const sizeSelect = document.getElementById('size-select');
     const printSelect = document.getElementById('print-select');
     const buyBtn = document.getElementById('buy-btn');
     const stockStatus = document.getElementById('stock-status');
     const productForm = document.getElementById('product-form');
+    const productImage = document.getElementById('product-image');
     const PRINT_LABELS = { d: 'Dark', w: 'White' };
     const allColors = [...new Set(VARIANTS.map(v => v.color))];
 
@@ -139,8 +152,16 @@
       return VARIANTS.find(v => v.color === color && v.size === size && v.print === print);
     }
 
+    function updateImage() {
+      const color = colorSelect.value;
+      const print = printSelect.value;
+      const key = `${color}|${print}`;
+      productImage.src = IMAGE_MAP[key] || DEFAULT_IMAGE;
+    }
+
     function updateStatus() {
       const variant = getSelectedVariant();
+      updateImage();
       if (variant) {
         if (variant.qty > 0) {
           buyBtn.disabled = false; buyBtn.textContent = `Buy Now — ${PRICE_DISPLAY}`;
