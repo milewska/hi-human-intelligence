@@ -2,7 +2,7 @@
  * POST /api/checkout
  * Creates a Stripe Checkout Session after verifying inventory.
  *
- * Expects JSON body: { priceId, productId, quantity }
+ * Expects JSON body: { items: [{ priceId, productId, quantity }, ...] }
  * Env vars: STRIPE_SECRET_KEY, DOMAIN
  */
 
@@ -23,10 +23,18 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: 'Invalid JSON' }, 400);
   }
 
-  const { priceId, productId, quantity = 1 } = data;
+  // Support legacy single-item format AND new cart format
+  let items;
+  if (data.items && Array.isArray(data.items)) {
+    items = data.items;
+  } else if (data.priceId && data.productId) {
+    items = [{ priceId: data.priceId, productId: data.productId, quantity: data.quantity || 1 }];
+  } else {
+    return jsonResponse({ error: 'items array is required' }, 400);
+  }
 
-  if (!priceId || !productId) {
-    return jsonResponse({ error: 'priceId and productId are required' }, 400);
+  if (items.length === 0) {
+    return jsonResponse({ error: 'Cart is empty' }, 400);
   }
 
   // ── Shipping rate IDs ──
@@ -34,37 +42,63 @@ export async function onRequestPost(context) {
   const SHIPPING_INTL = 'shr_1T6nrsE3DWgyVvjlmOq4A3ch';  // $20 flat International
   const SHIPPING_FREE = 'shr_1T6nrxE3DWgyVvjll4ERVMhQ';  // Free shipping (orders $50+)
 
-  // ── Check inventory ──
-  const productRes = await fetch(
-    `https://api.stripe.com/v1/products/${encodeURIComponent(productId)}`,
-    { headers: { Authorization: `Bearer ${STRIPE_KEY}` } }
-  );
-  const product = await productRes.json();
+  // ── Check inventory for every item ──
+  let orderTotal = 0; // in cents
 
-  if (product.error) {
-    return jsonResponse({ error: product.error.message }, 400);
-  }
+  for (const item of items) {
+    if (!item.priceId || !item.productId) {
+      return jsonResponse({ error: 'Each item needs priceId and productId' }, 400);
+    }
 
-  const inventory = parseInt(product.metadata?.inventory ?? '0', 10);
-
-  if (inventory < quantity) {
-    return jsonResponse(
-      { error: 'out_of_stock', message: `Only ${inventory} left in stock` },
-      400
+    const productRes = await fetch(
+      `https://api.stripe.com/v1/products/${encodeURIComponent(item.productId)}`,
+      { headers: { Authorization: `Bearer ${STRIPE_KEY}` } }
     );
+    const product = await productRes.json();
+
+    if (product.error) {
+      return jsonResponse({ error: product.error.message }, 400);
+    }
+
+    const inventory = parseInt(product.metadata?.inventory ?? '0', 10);
+    const qty = item.quantity || 1;
+
+    if (inventory < qty) {
+      const name = product.name || item.productId;
+      return jsonResponse(
+        { error: 'out_of_stock', message: `"${name}" — only ${inventory} left in stock` },
+        400
+      );
+    }
+
+    // Fetch price to accumulate order total
+    const priceRes = await fetch(
+      `https://api.stripe.com/v1/prices/${encodeURIComponent(item.priceId)}`,
+      { headers: { Authorization: `Bearer ${STRIPE_KEY}` } }
+    );
+    const priceObj = await priceRes.json();
+    orderTotal += (priceObj.unit_amount || 0) * qty;
   }
 
   // ── Create Checkout Session ──
   const params = new URLSearchParams();
   params.append('payment_method_types[]', 'card');
-  params.append('line_items[0][price]', priceId);
-  params.append('line_items[0][quantity]', String(quantity));
+
+  // Add all line items
+  items.forEach((item, i) => {
+    params.append(`line_items[${i}][price]`, item.priceId);
+    params.append(`line_items[${i}][quantity]`, String(item.quantity || 1));
+  });
+
   params.append('mode', 'payment');
   params.append('success_url', `${DOMAIN}/success.html?session_id={CHECKOUT_SESSION_ID}`);
   params.append('cancel_url', `${DOMAIN}/shop.html`);
-  params.append('metadata[product_id]', productId);
-  params.append('metadata[quantity]', String(quantity));
-  // ── Shipping address collection — open to more countries ──
+
+  // Store item info in metadata (first 500 chars to stay within Stripe limits)
+  const metaItems = items.map(i => `${i.productId}:${i.quantity}`).join(',');
+  params.append('metadata[items]', metaItems.slice(0, 500));
+
+  // ── Shipping address collection ──
   const allowedCountries = [
     'US', 'CA', 'GB', 'AU', 'DE', 'FR', 'IT', 'ES', 'NL', 'JP',
     'SE', 'NO', 'DK', 'FI', 'IE', 'NZ', 'AT', 'CH', 'BE', 'PT'
@@ -73,21 +107,10 @@ export async function onRequestPost(context) {
     params.append('shipping_address_collection[allowed_countries][]', c);
   });
 
-  // ── Shipping options — free shipping for orders over $50 ──
-  // Fetch price to determine order total
-  const priceRes = await fetch(
-    `https://api.stripe.com/v1/prices/${encodeURIComponent(priceId)}`,
-    { headers: { Authorization: `Bearer ${STRIPE_KEY}` } }
-  );
-  const priceObj = await priceRes.json();
-  const unitAmount = priceObj.unit_amount || 0;
-  const orderTotal = unitAmount * quantity; // in cents
-
+  // ── Shipping options — free for orders >= $50 ──
   if (orderTotal >= 5000) {
-    // Order >= $50: offer only free shipping
     params.append('shipping_options[0][shipping_rate]', SHIPPING_FREE);
   } else {
-    // Under $50: offer US + International paid rates
     params.append('shipping_options[0][shipping_rate]', SHIPPING_US);
     params.append('shipping_options[1][shipping_rate]', SHIPPING_INTL);
   }

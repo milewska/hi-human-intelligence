@@ -20,6 +20,13 @@
 
   <script src="nav.js" defer></script>
   <script src="footer.js" defer></script>
+  <script src="cart.js" defer></script>
+  <script>
+    // Clear cart after successful checkout
+    if (window.location.search.includes('session_id')) {
+      try { HI_CART.clear(); } catch(e) {}
+    }
+  </script>
 
 </body>
 </html>

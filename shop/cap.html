@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HI Cap — HI Human Intelligence</title>
-  <meta name="description" content="Classic cap. A reminder to trust the innate intelligence of the human body.">
+  <meta name="description" content="Classic cap with embroidered HI logo. A reminder to trust the innate intelligence of the human body.">
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
     <div class="product-detail-info">
       <h1>HI Cap</h1>
       <p class="product-price">$35</p>
-      <p class="product-desc">Classic cap. A reminder to trust the innate intelligence of the human body.</p>
+      <p class="product-desc">Classic cap with embroidered HI logo. A reminder to trust the innate intelligence of the human body.</p>
 
       <form id="product-form" class="product-options">
         <div class="option-group">
@@ -37,6 +37,7 @@
 
   <script src="../nav.js" defer></script>
   <script src="../footer.js" defer></script>
+  <script src="../cart.js" defer></script>
 
   <script>
     const VARIANTS = [
@@ -80,7 +81,7 @@
       const variant = selectedColor ? VARIANTS.find(v => v.color === selectedColor) : null;
       if (variant) {
         if (variant.qty > 0) {
-          buyBtn.disabled = false; buyBtn.textContent = 'Buy Now — $35';
+          buyBtn.disabled = false; buyBtn.textContent = 'Add to Cart — $35';
           stockStatus.textContent = variant.qty <= 3 ? `Only ${variant.qty} left` : 'In Stock';
           stockStatus.className = 'stock-status' + (variant.qty <= 3 ? ' stock-low' : ' stock-ok');
         } else {
@@ -93,22 +94,25 @@
       }
     }
 
-    productForm.addEventListener('submit', async (e) => {
+    productForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const variant = VARIANTS.find(v => v.color === selectedColor);
       if (!variant) return;
-      buyBtn.disabled = true; buyBtn.textContent = 'Processing...';
-      try {
-        const res = await fetch('/api/checkout', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ priceId: variant.priceId, productId: variant.productId, quantity: 1 })
-        });
-        const data = await res.json();
-        if (data.url) window.location.href = data.url;
-        else if (data.error === 'out_of_stock') {
-          stockStatus.textContent = data.message; stockStatus.className = 'stock-status stock-out'; buyBtn.textContent = 'Sold Out';
-        } else { alert('Something went wrong.'); updateStatus(); }
-      } catch { alert('Connection error.'); updateStatus(); }
+      const image = IMAGE_MAP[selectedColor] || DEFAULT_IMAGE;
+      HI_CART.add({
+        priceId: variant.priceId,
+        productId: variant.productId,
+        name: 'HI Cap',
+        color: variant.color,
+        size: null,
+        print: null,
+        price: 35,
+        qty: 1,
+        image: image.replace('../', ''),
+      });
+      buyBtn.textContent = '✓ Added!';
+      buyBtn.disabled = true;
+      setTimeout(() => updateStatus(), 1500);
     });
   </script>
 </body>

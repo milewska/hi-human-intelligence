@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart — HI Human Intelligence</title>
+  <meta name="description" content="Your shopping cart — HI Human Intelligence.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <section class="cart-page">
+    <h1>Your Cart</h1>
+
+    <div id="cart-empty" class="cart-empty" style="display:none">
+      <p>Your cart is empty.</p>
+      <a href="shop.html" class="cta cta-warm">Continue Shopping</a>
+    </div>
+
+    <div id="cart-contents" style="display:none">
+      <div class="cart-items" id="cart-items"></div>
+
+      <div class="cart-summary">
+        <div class="cart-summary-row">
+          <span>Subtotal</span>
+          <span id="cart-subtotal">$0</span>
+        </div>
+        <div class="cart-summary-row">
+          <span>Shipping</span>
+          <span id="cart-shipping">Calculated at checkout</span>
+        </div>
+        <div class="cart-summary-row cart-free-shipping-note" id="free-shipping-note" style="display:none">
+          <span></span>
+          <span class="free-ship-msg">🎉 You qualify for FREE shipping!</span>
+        </div>
+        <div class="cart-summary-row cart-free-shipping-hint" id="free-shipping-hint" style="display:none">
+          <span></span>
+          <span class="hint-msg" id="hint-msg"></span>
+        </div>
+        <hr>
+        <button class="cta cta-warm product-buy cart-checkout-btn" id="checkout-btn">
+          Checkout
+        </button>
+        <a href="shop.html" class="back-link">← Continue Shopping</a>
+      </div>
+    </div>
+  </section>
+
+  <script src="nav.js" defer></script>
+  <script src="footer.js" defer></script>
+  <script src="cart.js" defer></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', render);
+    window.addEventListener('cart-updated', render);
+
+    function render() {
+      const cart = HI_CART.get();
+      const emptyEl = document.getElementById('cart-empty');
+      const contentsEl = document.getElementById('cart-contents');
+      const itemsEl = document.getElementById('cart-items');
+      const subtotalEl = document.getElementById('cart-subtotal');
+      const shippingEl = document.getElementById('cart-shipping');
+      const freeNote = document.getElementById('free-shipping-note');
+      const freeHint = document.getElementById('free-shipping-hint');
+      const hintMsg = document.getElementById('hint-msg');
+
+      if (cart.length === 0) {
+        emptyEl.style.display = 'flex';
+        contentsEl.style.display = 'none';
+        return;
+      }
+
+      emptyEl.style.display = 'none';
+      contentsEl.style.display = 'block';
+
+      const subtotal = HI_CART.subtotal();
+      subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+
+      if (subtotal >= 50) {
+        shippingEl.textContent = 'FREE';
+        shippingEl.style.color = '#6ecf6e';
+        freeNote.style.display = 'flex';
+        freeHint.style.display = 'none';
+      } else {
+        shippingEl.textContent = 'From $10';
+        shippingEl.style.color = '';
+        freeNote.style.display = 'none';
+        const remaining = (50 - subtotal).toFixed(2);
+        hintMsg.textContent = `Add $${remaining} more for FREE shipping`;
+        freeHint.style.display = 'flex';
+      }
+
+      itemsEl.innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <div class="cart-item-image">
+            <img src="${item.image}" alt="${item.name}">
+          </div>
+          <div class="cart-item-details">
+            <h3>${item.name}</h3>
+            <p class="cart-item-variant">${[item.color, item.size, item.print].filter(Boolean).join(' · ')}</p>
+            <p class="cart-item-price">$${item.price.toFixed(2)}</p>
+          </div>
+          <div class="cart-item-actions">
+            <div class="cart-qty-controls">
+              <button class="cart-qty-btn" onclick="changeQty('${item.priceId}', ${item.qty - 1})">−</button>
+              <span class="cart-qty-value">${item.qty}</span>
+              <button class="cart-qty-btn" onclick="changeQty('${item.priceId}', ${item.qty + 1})">+</button>
+            </div>
+            <button class="cart-remove-btn" onclick="removeItem('${item.priceId}')">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function changeQty(priceId, qty) {
+      HI_CART.updateQty(priceId, qty);
+    }
+
+    function removeItem(priceId) {
+      HI_CART.remove(priceId);
+    }
+
+    document.getElementById('checkout-btn').addEventListener('click', async () => {
+      const cart = HI_CART.get();
+      if (cart.length === 0) return;
+
+      const btn = document.getElementById('checkout-btn');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      try {
+        const items = cart.map(i => ({
+          priceId: i.priceId,
+          productId: i.productId,
+          quantity: i.qty,
+        }));
+
+        const res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items }),
+        });
+
+        const data = await res.json();
+
+        if (data.url) {
+          // Clear cart before redirecting to Stripe
+          HI_CART.clear();
+          window.location.href = data.url;
+        } else if (data.error === 'out_of_stock') {
+          alert(data.message || 'Some items are out of stock.');
+          btn.disabled = false;
+          btn.textContent = 'Checkout';
+        } else {
+          alert(data.error || 'Something went wrong.');
+          btn.disabled = false;
+          btn.textContent = 'Checkout';
+        }
+      } catch {
+        alert('Connection error. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Checkout';
+      }
+    });
+  </script>
+
+</body>
+</html>

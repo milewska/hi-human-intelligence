@@ -45,6 +45,7 @@
 
   <script src="../nav.js" defer></script>
   <script src="../footer.js" defer></script>
+  <script src="../cart.js" defer></script>
 
   <script>
     const VARIANTS = [
@@ -175,7 +176,7 @@
       const variant = getSelectedVariant();
       if (variant) {
         if (variant.qty > 0) {
-          buyBtn.disabled = false; buyBtn.textContent = `Buy Now — ${PRICE_DISPLAY}`;
+          buyBtn.disabled = false; buyBtn.textContent = `Add to Cart — ${PRICE_DISPLAY}`;
           stockStatus.textContent = variant.qty <= 3 ? `Only ${variant.qty} left` : 'In Stock';
           stockStatus.className = 'stock-status' + (variant.qty <= 3 ? ' stock-low' : ' stock-ok');
         } else {
@@ -188,22 +189,27 @@
       }
     }
 
-    productForm.addEventListener('submit', async (e) => {
+    productForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const variant = getSelectedVariant();
       if (!variant) return;
-      buyBtn.disabled = true; buyBtn.textContent = 'Processing...';
-      try {
-        const res = await fetch('/api/checkout', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ priceId: variant.priceId, productId: variant.productId, quantity: 1 })
-        });
-        const data = await res.json();
-        if (data.url) window.location.href = data.url;
-        else if (data.error === 'out_of_stock') {
-          stockStatus.textContent = data.message; stockStatus.className = 'stock-status stock-out'; buyBtn.textContent = 'Sold Out';
-        } else { alert('Something went wrong.'); updateStatus(); }
-      } catch { alert('Connection error.'); updateStatus(); }
+      const color = colorSelect.value;
+      const key = `${color}|${selectedPrint}`;
+      const image = IMAGE_MAP[key] || Object.values(IMAGE_MAP).find((v, i) => Object.keys(IMAGE_MAP)[i].startsWith(color + '|')) || DEFAULT_IMAGE;
+      HI_CART.add({
+        priceId: variant.priceId,
+        productId: variant.productId,
+        name: 'HI Long Sleeve',
+        color: color,
+        size: variant.size,
+        print: variant.print === 'd' ? 'Dark' : 'White',
+        price: 55,
+        qty: 1,
+        image: image.replace('../', ''),
+      });
+      buyBtn.textContent = '✓ Added!';
+      buyBtn.disabled = true;
+      setTimeout(() => updateStatus(), 1500);
     });
   </script>
 </body>
