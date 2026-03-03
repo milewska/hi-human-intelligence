@@ -145,8 +145,6 @@
         const data = await res.json();
 
         if (data.url) {
-          // Clear cart before redirecting to Stripe
-          HI_CART.clear();
           window.location.href = data.url;
         } else if (data.error === 'out_of_stock') {
           alert(data.message || 'Some items are out of stock.');

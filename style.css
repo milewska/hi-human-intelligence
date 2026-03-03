@@ -721,6 +721,38 @@ p {
   margin-bottom: 0.25rem;
 }
 
+/* Discount notice for select variants */
+.discount-notice {
+  background: rgba(232, 201, 160, 0.08);
+  border: 1px solid rgba(232, 201, 160, 0.2);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.discount-notice p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.discount-notice s {
+  color: rgba(245, 242, 238, 0.4);
+}
+
+.discount-price {
+  color: #6ecf6e;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.discount-disclaimer {
+  color: rgba(245, 242, 238, 0.5);
+  font-size: 0.78rem !important;
+  font-style: italic;
+  margin-top: 0.35rem !important;
+}
+
 .product-options {
   display: flex;
   flex-direction: column;

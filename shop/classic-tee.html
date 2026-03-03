@@ -20,6 +20,11 @@
       <p class="product-price">$45</p>
       <p class="product-desc">Classic fit tee. A reminder to trust the innate intelligence of the human body.</p>
 
+      <div id="discount-notice" class="discount-notice" style="display:none">
+        <p><strong>25% OFF</strong> — <s>$45</s> <span class="discount-price">$35</span></p>
+        <p class="discount-disclaimer">Print colors have bled and logos may be a bit washed out.</p>
+      </div>
+
       <form id="product-form" class="product-options">
         <div class="option-group">
           <label for="color-select">Shirt Color</label>
@@ -57,14 +62,14 @@
       { color: "Washed Pine", size: "XL",  print: "d", qty: 1, productId: "prod_U4dGtDVZhfJ5aD", priceId: "price_1T6TzkE3DWgyVvjlAt0nhJqi" },
       { color: "Washed Pine", size: "2XL", print: "w", qty: 1, productId: "prod_U4dG5EeXK2fQby", priceId: "price_1T6TzmE3DWgyVvjlHCsxFEPg" },
       // Washed Red
-      { color: "Washed Red", size: "L",   print: "d", qty: 1, productId: "prod_U4dGqoyUiJyyTQ", priceId: "price_1T6TznE3DWgyVvjldtDps4rn" },
-      { color: "Washed Red", size: "L",   print: "w", qty: 1, productId: "prod_U4dGGBwydZpTxq", priceId: "price_1T6TzoE3DWgyVvjlNxPFoh4U" },
-      { color: "Washed Red", size: "XL",  print: "d", qty: 2, productId: "prod_U4dG9I1CS7aH7t", priceId: "price_1T6TzqE3DWgyVvjlcCVc1lgE" },
-      { color: "Washed Red", size: "XL",  print: "w", qty: 1, productId: "prod_U4dGdox5G1Su8o", priceId: "price_1T6TzsE3DWgyVvjlKe5BsuLb" },
-      { color: "Washed Red", size: "2XL", print: "d", qty: 1, productId: "prod_U4dGA3MkrOHfJH", priceId: "price_1T6TztE3DWgyVvjlnPTMBdwY" },
+      { color: "Washed Red", size: "L",   print: "d", qty: 1, productId: "prod_U4dGqoyUiJyyTQ", priceId: "price_1T6pabE3DWgyVvjlOEXaGqsx" },
+      { color: "Washed Red", size: "L",   print: "w", qty: 1, productId: "prod_U4dGGBwydZpTxq", priceId: "price_1T6pahE3DWgyVvjlaoIp66S3" },
+      { color: "Washed Red", size: "XL",  print: "d", qty: 2, productId: "prod_U4dG9I1CS7aH7t", priceId: "price_1T6pamE3DWgyVvjlGftGWsnJ" },
+      { color: "Washed Red", size: "XL",  print: "w", qty: 1, productId: "prod_U4dGdox5G1Su8o", priceId: "price_1T6paqE3DWgyVvjlV5q8tZBB" },
+      { color: "Washed Red", size: "2XL", print: "d", qty: 1, productId: "prod_U4dGA3MkrOHfJH", priceId: "price_1T6pavE3DWgyVvjlKRwUp1B0" },
       // Washed Cocoa
-      { color: "Washed Cocoa", size: "XL",  print: "w", qty: 3, productId: "prod_U4dGURjsgRSgrE", priceId: "price_1T6TzuE3DWgyVvjlJKJykHf5" },
-      { color: "Washed Cocoa", size: "2XL", print: "w", qty: 1, productId: "prod_U4dGFNuhwBjcSM", priceId: "price_1T6TzvE3DWgyVvjlgv3r0xl8" },
+      { color: "Washed Cocoa", size: "XL",  print: "w", qty: 3, productId: "prod_U4dGURjsgRSgrE", priceId: "price_1T6paME3DWgyVvjlJWDJWJ2U" },
+      { color: "Washed Cocoa", size: "2XL", print: "w", qty: 1, productId: "prod_U4dGFNuhwBjcSM", priceId: "price_1T6pb3E3DWgyVvjlbNd91tt6" },
       // Brick
       { color: "Brick", size: "S", print: "w", qty: 4, productId: "prod_U4dGDSLZ4Ix9Xf", priceId: "price_1T6TzxE3DWgyVvjlDCQE4oFk" },
       { color: "Brick", size: "M", print: "w", qty: 2, productId: "prod_U4dGQj3oOCnMVy", priceId: "price_1T6TzyE3DWgyVvjl4azbRORj" },
@@ -80,6 +85,8 @@
     ];
 
     const PRICE_DISPLAY = '$45';
+    const DISCOUNT_COLORS = new Set(['Washed Red', 'Washed Cocoa']);
+    const DISCOUNT_PRICE_DISPLAY = '$35';
 
     // Image map: "Color|print" → filename
     const IMAGE_MAP = {
@@ -122,6 +129,16 @@
       renderSizes();
       renderPrints();
       updateStatus();
+      // Show/hide discount notice
+      const notice = document.getElementById('discount-notice');
+      const priceEl = document.querySelector('.product-price');
+      if (DISCOUNT_COLORS.has(colorSelect.value)) {
+        notice.style.display = 'block';
+        priceEl.style.display = 'none';
+      } else {
+        notice.style.display = 'none';
+        priceEl.style.display = '';
+      }
     });
 
     function updateImage() {
@@ -206,10 +223,13 @@
 
     function updateStatus() {
       const variant = getSelectedVariant();
+      const color = colorSelect.value;
+      const isDiscounted = DISCOUNT_COLORS.has(color);
+      const priceLabel = isDiscounted ? DISCOUNT_PRICE_DISPLAY : PRICE_DISPLAY;
       if (variant) {
         if (variant.qty > 0) {
           buyBtn.disabled = false;
-          buyBtn.textContent = `Add to Cart — ${PRICE_DISPLAY}`;
+          buyBtn.textContent = `Add to Cart — ${priceLabel}`;
           stockStatus.textContent = variant.qty <= 3 ? `Only ${variant.qty} left` : 'In Stock';
           stockStatus.className = 'stock-status' + (variant.qty <= 3 ? ' stock-low' : ' stock-ok');
         } else {
@@ -227,6 +247,7 @@
       const variant = getSelectedVariant();
       if (!variant) return;
       const color = colorSelect.value;
+      const isDiscounted = DISCOUNT_COLORS.has(color);
       const key = `${color}|${selectedPrint}`;
       const image = IMAGE_MAP[key] || Object.values(IMAGE_MAP).find((v, i) => Object.keys(IMAGE_MAP)[i].startsWith(color + '|')) || DEFAULT_IMAGE;
       HI_CART.add({
@@ -236,7 +257,7 @@
         color: color,
         size: variant.size,
         print: variant.print === 'd' ? 'Dark' : 'White',
-        price: 45,
+        price: isDiscounted ? 35 : 45,
         qty: 1,
         image: image.replace('../', ''),
       });
