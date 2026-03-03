@@ -28,10 +28,8 @@
           </select>
         </div>
         <div class="option-group">
-          <label for="size-select">Size</label>
-          <select class="option-select" id="size-select" disabled>
-            <option value="">Select a size</option>
-          </select>
+          <label>Size</label>
+          <div class="option-buttons" id="size-buttons"></div>
         </div>
         <div class="option-group">
           <label for="print-select">Print Color</label>
@@ -98,14 +96,16 @@
     const DEFAULT_IMAGE = '../images/photo-12.jpg';
 
     const colorSelect = document.getElementById('color-select');
-    const sizeSelect = document.getElementById('size-select');
+    const sizeButtons = document.getElementById('size-buttons');
     const printSelect = document.getElementById('print-select');
     const buyBtn = document.getElementById('buy-btn');
     const stockStatus = document.getElementById('stock-status');
     const productForm = document.getElementById('product-form');
     const productImage = document.getElementById('product-image');
     const PRINT_LABELS = { d: 'Dark', w: 'White' };
+    const ALL_SIZES = ['S', 'M', 'L', 'XL', '2XL'];
     const allColors = [...new Set(VARIANTS.map(v => v.color))];
+    let selectedSize = '';
 
     // Populate color dropdown
     allColors.forEach(color => {
@@ -116,44 +116,78 @@
     });
 
     colorSelect.addEventListener('change', () => {
-      sizeSelect.value = '';
+      selectedSize = '';
       printSelect.value = '';
       printSelect.disabled = true;
-      updateSizes();
-      updateStatus();
-    });
-
-    sizeSelect.addEventListener('change', () => {
-      printSelect.value = '';
-      updatePrints();
+      updateImage();
+      renderSizes();
       updateStatus();
     });
 
     printSelect.addEventListener('change', () => {
+      updateImage();
       updateStatus();
     });
 
-    function updateSizes() {
+    function updateImage() {
       const color = colorSelect.value;
-      sizeSelect.innerHTML = '<option value="">Select a size</option>';
-      if (!color) { sizeSelect.disabled = true; return; }
-      const sizes = [...new Set(VARIANTS.filter(v => v.color === color).map(v => v.size))];
-      const order = ['S', 'M', 'L', 'XL', '2XL'];
-      sizes.sort((a, b) => order.indexOf(a) - order.indexOf(b));
-      sizes.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s; opt.textContent = s;
-        sizeSelect.appendChild(opt);
+      const print = printSelect.value;
+      // Try color+print first, then first available print for this color
+      if (color) {
+        const key = `${color}|${print}`;
+        if (IMAGE_MAP[key]) {
+          productImage.src = IMAGE_MAP[key];
+          return;
+        }
+        // Fallback: find any image for this color
+        const fallback = Object.keys(IMAGE_MAP).find(k => k.startsWith(color + '|'));
+        if (fallback) {
+          productImage.src = IMAGE_MAP[fallback];
+          return;
+        }
+      }
+      productImage.src = DEFAULT_IMAGE;
+    }
+
+    function renderSizes() {
+      const color = colorSelect.value;
+      sizeButtons.innerHTML = '';
+      if (!color) return;
+      const availableSizes = VARIANTS.filter(v => v.color === color);
+      ALL_SIZES.forEach(size => {
+        const variants = availableSizes.filter(v => v.size === size);
+        const totalQty = variants.reduce((sum, v) => sum + v.qty, 0);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt-btn';
+        btn.textContent = size;
+        if (variants.length === 0) {
+          // Size doesn't exist for this color at all — hide it
+          return;
+        }
+        if (totalQty === 0) {
+          btn.classList.add('sold-out');
+          btn.disabled = true;
+        } else {
+          btn.addEventListener('click', () => {
+            selectedSize = size;
+            sizeButtons.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            printSelect.value = '';
+            updatePrints();
+            updateStatus();
+          });
+        }
+        if (selectedSize === size && totalQty > 0) btn.classList.add('active');
+        sizeButtons.appendChild(btn);
       });
-      sizeSelect.disabled = false;
     }
 
     function updatePrints() {
       const color = colorSelect.value;
-      const size = sizeSelect.value;
       printSelect.innerHTML = '<option value="">Select print color</option>';
-      if (!color || !size) { printSelect.disabled = true; return; }
-      const prints = [...new Set(VARIANTS.filter(v => v.color === color && v.size === size).map(v => v.print))];
+      if (!color || !selectedSize) { printSelect.disabled = true; return; }
+      const prints = [...new Set(VARIANTS.filter(v => v.color === color && v.size === selectedSize).map(v => v.print))];
       if (prints.length === 1) {
         const opt = document.createElement('option');
         opt.value = prints[0]; opt.textContent = PRINT_LABELS[prints[0]] || prints[0];
@@ -168,27 +202,19 @@
         });
         printSelect.disabled = false;
       }
+      updateImage();
       updateStatus();
     }
 
     function getSelectedVariant() {
       const color = colorSelect.value;
-      const size = sizeSelect.value;
       const print = printSelect.value;
-      if (!color || !size || !print) return null;
-      return VARIANTS.find(v => v.color === color && v.size === size && v.print === print);
-    }
-
-    function updateImage() {
-      const color = colorSelect.value;
-      const print = printSelect.value;
-      const key = `${color}|${print}`;
-      productImage.src = IMAGE_MAP[key] || DEFAULT_IMAGE;
+      if (!color || !selectedSize || !print) return null;
+      return VARIANTS.find(v => v.color === color && v.size === selectedSize && v.print === print);
     }
 
     function updateStatus() {
       const variant = getSelectedVariant();
-      updateImage();
       if (variant) {
         if (variant.qty > 0) {
           buyBtn.disabled = false;

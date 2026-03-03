@@ -101,7 +101,7 @@ p {
   width: auto;
   object-fit: contain;
   border-radius: 3px;
-  background: #fff;
+  background: transparent;
   padding: 4px 6px;
 }
 
