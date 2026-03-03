@@ -30,10 +30,8 @@
           <div class="option-buttons" id="size-buttons"></div>
         </div>
         <div class="option-group">
-          <label for="print-select">Print Color</label>
-          <select class="option-select" id="print-select" disabled>
-            <option value="">Select print color</option>
-          </select>
+          <label>Print Color</label>
+          <div class="option-buttons" id="print-buttons"></div>
         </div>
         <div id="stock-status" class="stock-status"></div>
         <button type="submit" class="cta cta-warm product-buy" id="buy-btn" disabled>
@@ -74,7 +72,7 @@
 
     const colorSelect = document.getElementById('color-select');
     const sizeButtons = document.getElementById('size-buttons');
-    const printSelect = document.getElementById('print-select');
+    const printButtons = document.getElementById('print-buttons');
     const buyBtn = document.getElementById('buy-btn');
     const stockStatus = document.getElementById('stock-status');
     const productForm = document.getElementById('product-form');
@@ -83,6 +81,7 @@
     const ALL_SIZES = ['S', 'M', 'L', 'XL', '2XL'];
     const allColors = [...new Set(VARIANTS.map(v => v.color))];
     let selectedSize = '';
+    let selectedPrint = '';
 
     allColors.forEach(color => {
       const opt = document.createElement('option');
@@ -91,16 +90,14 @@
     });
 
     colorSelect.addEventListener('change', () => {
-      selectedSize = ''; printSelect.value = ''; printSelect.disabled = true;
-      updateImage(); renderSizes(); updateStatus();
+      selectedSize = ''; selectedPrint = '';
+      updateImage(); renderSizes(); renderPrints(); updateStatus();
     });
-    printSelect.addEventListener('change', () => { updateImage(); updateStatus(); });
 
     function updateImage() {
       const color = colorSelect.value;
-      const print = printSelect.value;
       if (color) {
-        const key = `${color}|${print}`;
+        const key = `${color}|${selectedPrint}`;
         if (IMAGE_MAP[key]) { productImage.src = IMAGE_MAP[key]; return; }
         const fallback = Object.keys(IMAGE_MAP).find(k => k.startsWith(color + '|'));
         if (fallback) { productImage.src = IMAGE_MAP[fallback]; return; }
@@ -126,7 +123,9 @@
             selectedSize = size;
             sizeButtons.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            printSelect.value = ''; updatePrints(); updateStatus();
+            selectedPrint = '';
+            renderPrints();
+            updateStatus();
           });
         }
         if (selectedSize === size && totalQty > 0) btn.classList.add('active');
@@ -134,30 +133,42 @@
       });
     }
 
-    function updatePrints() {
+    function renderPrints() {
       const color = colorSelect.value;
-      printSelect.innerHTML = '<option value="">Select print color</option>';
-      if (!color || !selectedSize) { printSelect.disabled = true; return; }
+      printButtons.innerHTML = '';
+      if (!color || !selectedSize) return;
       const prints = [...new Set(VARIANTS.filter(v => v.color === color && v.size === selectedSize).map(v => v.print))];
+      prints.forEach(p => {
+        const variant = VARIANTS.find(v => v.color === color && v.size === selectedSize && v.print === p);
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'opt-btn'; btn.textContent = PRINT_LABELS[p] || p;
+        if (!variant || variant.qty === 0) {
+          btn.classList.add('sold-out'); btn.disabled = true;
+        } else {
+          btn.addEventListener('click', () => {
+            selectedPrint = p;
+            printButtons.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateImage(); updateStatus();
+          });
+        }
+        if (selectedPrint === p && variant && variant.qty > 0) btn.classList.add('active');
+        printButtons.appendChild(btn);
+      });
       if (prints.length === 1) {
-        const opt = document.createElement('option');
-        opt.value = prints[0]; opt.textContent = PRINT_LABELS[prints[0]] || prints[0];
-        printSelect.appendChild(opt); printSelect.value = prints[0];
-      } else {
-        prints.forEach(p => {
-          const opt = document.createElement('option');
-          opt.value = p; opt.textContent = PRINT_LABELS[p] || p;
-          printSelect.appendChild(opt);
-        });
+        const onlyVariant = VARIANTS.find(v => v.color === color && v.size === selectedSize && v.print === prints[0]);
+        if (onlyVariant && onlyVariant.qty > 0) {
+          selectedPrint = prints[0];
+          printButtons.querySelector('.opt-btn').classList.add('active');
+          updateImage(); updateStatus();
+        }
       }
-      printSelect.disabled = false;
-      updateImage(); updateStatus();
     }
 
     function getSelectedVariant() {
-      const color = colorSelect.value, print = printSelect.value;
-      if (!color || !selectedSize || !print) return null;
-      return VARIANTS.find(v => v.color === color && v.size === selectedSize && v.print === print);
+      const color = colorSelect.value;
+      if (!color || !selectedSize || !selectedPrint) return null;
+      return VARIANTS.find(v => v.color === color && v.size === selectedSize && v.print === selectedPrint);
     }
 
     function updateStatus() {
