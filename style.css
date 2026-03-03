@@ -487,6 +487,21 @@ p {
   color: var(--grey);
 }
 
+.shipping-banner {
+  text-align: center;
+  padding: 1rem 2rem;
+  background: rgba(232, 201, 160, 0.08);
+  border-top: 1px solid rgba(232, 201, 160, 0.15);
+  border-bottom: 1px solid rgba(232, 201, 160, 0.15);
+  font-size: 0.95rem;
+  color: var(--white);
+  letter-spacing: 0.03em;
+}
+
+.shipping-banner strong {
+  color: var(--warm);
+}
+
 .products {
   padding: 3rem 2rem 6rem;
   max-width: 1200px;
