@@ -81,11 +81,18 @@ const HI_CART = (function () {
     badge.textContent = n;
     badge.style.display = n > 0 ? 'flex' : 'none';
   }
-  window.addEventListener('cart-updated', updateBadge);
-  // Also run on DOM ready in case nav.js already rendered
+
+  function updateCheckoutBtn() {
+    const btn = document.getElementById('checkout-btn');
+    if (!btn) return;
+    btn.style.display = HI_CART.count() > 0 ? 'inline-block' : 'none';
+  }
+
+  window.addEventListener('cart-updated', () => { updateBadge(); updateCheckoutBtn(); });
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateBadge);
+    document.addEventListener('DOMContentLoaded', () => { updateBadge(); updateCheckoutBtn(); });
   } else {
     updateBadge();
+    updateCheckoutBtn();
   }
 })();
