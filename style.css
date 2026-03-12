@@ -330,6 +330,28 @@ p {
   filter: brightness(1.1);
 }
 
+.gallery-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 1rem 0.85rem;
+  background: linear-gradient(transparent, rgba(10, 10, 10, 0.82));
+  color: var(--white);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+.gallery-item:hover .gallery-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* Feature rows — larger images that breathe */
 .gallery-feature {
   grid-column: span 2;
@@ -630,6 +652,59 @@ p {
   font-size: 0.75rem;
   color: var(--grey);
   margin-top: 1rem;
+}
+
+/* --- Manifesto Section (Home) --- */
+
+.manifesto {
+  padding: 8rem 2rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid rgba(245, 242, 238, 0.08);
+  border-bottom: 1px solid rgba(245, 242, 238, 0.08);
+}
+
+.manifesto-inner {
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.manifesto-hi {
+  display: block;
+  font-size: clamp(5rem, 14vw, 11rem);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--warm);
+}
+
+.manifesto-welcome {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--white);
+  max-width: 100%;
+}
+
+.manifesto-body {
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  color: rgba(245, 242, 238, 0.82);
+  max-width: 560px;
+  line-height: 1.75;
+}
+
+.manifesto-steps {
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+  color: var(--warm);
+  line-height: 2;
+  letter-spacing: 0.02em;
+  max-width: 520px;
 }
 
 /* --- Scroll Fade-in Animation --- */
