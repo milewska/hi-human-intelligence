@@ -91,23 +91,27 @@
         freeHint.style.display = 'flex';
       }
 
+      function esc(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+      }
+
       itemsEl.innerHTML = cart.map(item => `
         <div class="cart-item">
           <div class="cart-item-image">
-            <img src="${item.image}" alt="${item.name}">
+            <img src="${esc(item.image)}" alt="${esc(item.name)}">
           </div>
           <div class="cart-item-details">
-            <h3>${item.name}</h3>
-            <p class="cart-item-variant">${[item.color, item.size, item.print].filter(Boolean).join(' · ')}</p>
+            <h3>${esc(item.name)}</h3>
+            <p class="cart-item-variant">${[item.color, item.size, item.print].filter(Boolean).map(esc).join(' · ')}</p>
             <p class="cart-item-price">$${item.price.toFixed(2)}</p>
           </div>
           <div class="cart-item-actions">
             <div class="cart-qty-controls">
-              <button class="cart-qty-btn" onclick="changeQty('${item.priceId}', ${item.qty - 1})">−</button>
+              <button class="cart-qty-btn" onclick="changeQty('${esc(item.priceId)}', ${item.qty - 1})">−</button>
               <span class="cart-qty-value">${item.qty}</span>
-              <button class="cart-qty-btn" onclick="changeQty('${item.priceId}', ${item.qty + 1})">+</button>
+              <button class="cart-qty-btn" onclick="changeQty('${esc(item.priceId)}', ${item.qty + 1})">+</button>
             </div>
-            <button class="cart-remove-btn" onclick="removeItem('${item.priceId}')">Remove</button>
+            <button class="cart-remove-btn" onclick="removeItem('${esc(item.priceId)}')">Remove</button>
           </div>
         </div>
       `).join('');

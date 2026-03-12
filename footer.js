@@ -10,7 +10,7 @@
   const footerHTML = `
   <footer class="footer">
     <a href="${p}index.html" class="footer-logo">
-      <img src="${p}images/logo-1.png" alt="HI">
+      <img src="${p}images/logo-1.png" alt="HI — Human Intelligence">
     </a>
     <p class="tagline">A reminder to trust the innate intelligence of the human body.</p>
     <div class="footer-socials">
